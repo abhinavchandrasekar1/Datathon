@@ -346,6 +346,64 @@ select option:checked {
   border-color: var(--border-strong);
 }
 
+/* Typewriter Cursor */
+.typewriter-cursor {
+  display: inline-block;
+  color: var(--cyan);
+  -webkit-text-fill-color: var(--cyan);
+  font-weight: 300;
+  animation: blinkCursor 0.85s infinite;
+  margin-left: 2px;
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.7);
+  vertical-align: baseline;
+}
+
+@keyframes blinkCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Team Credits Card */
+.team-credits {
+  margin-top: 6px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.credits-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.credits-badge::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--positive);
+  box-shadow: 0 0 6px var(--positive);
+}
+
+.credits-content {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  font-family: 'Space Grotesk', sans-serif;
+  line-height: 1.4;
+  min-height: 1.4em;
+}
+
 .pipeline-status {
   display: flex;
   flex-direction: column;

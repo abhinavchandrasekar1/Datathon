@@ -824,10 +824,84 @@ function setupCustomSelects() {
   });
 }
 
+// ---------------------------------------------------------------------------
+// First-Time Typewriter Animations for Brand Heading & Project Creators
+// ---------------------------------------------------------------------------
+function initTypewriterAnimations() {
+  const line1El = document.getElementById('brand-line-1');
+  const line2El = document.getElementById('brand-line-2');
+  const brandCursor = document.getElementById('brand-cursor');
+  const creditsEl = document.getElementById('credits-text');
+  const creditsCursor = document.getElementById('credits-cursor');
+
+  if (!line1El || !line2El || !creditsEl) return;
+
+  if (window.__typewriterDone) return;
+  window.__typewriterDone = true;
+
+  const line1Text = 'Feedback';
+  const line2Text = 'Intelligence';
+  const creatorsString = 'Created by Abhinav C, Dushyanth K, Abigail Zandra';
+
+  let idx1 = 0;
+  function typeLine1() {
+    if (idx1 < line1Text.length) {
+      line1El.textContent += line1Text.charAt(idx1);
+      idx1++;
+      setTimeout(typeLine1, 55);
+    } else {
+      // Move cursor down to line 2 before typing Intelligence
+      setTimeout(() => {
+        if (brandCursor && line2El.parentNode) {
+          line2El.parentNode.appendChild(brandCursor);
+        }
+        typeLine2();
+      }, 140);
+    }
+  }
+
+  let idx2 = 0;
+  function typeLine2() {
+    if (idx2 < line2Text.length) {
+      line2El.textContent += line2Text.charAt(idx2);
+      idx2++;
+      setTimeout(typeLine2, 55);
+    } else {
+      setTimeout(() => {
+        if (brandCursor) {
+          brandCursor.style.transition = 'opacity 0.4s ease';
+          brandCursor.style.opacity = '0';
+          setTimeout(() => brandCursor.remove(), 400);
+        }
+        typeCredits();
+      }, 220);
+    }
+  }
+
+  let creditIdx = 0;
+  function typeCredits() {
+    if (creditIdx < creatorsString.length) {
+      creditsEl.textContent += creatorsString.charAt(creditIdx);
+      creditIdx++;
+      setTimeout(typeCredits, 38);
+    } else {
+      setTimeout(() => {
+        if (creditsCursor) {
+          creditsCursor.style.transition = 'opacity 0.6s ease';
+          creditsCursor.style.opacity = '0.35';
+        }
+      }, 2500);
+    }
+  }
+
+  typeLine1();
+}
+
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   setupCustomSelects();
   initInteractions();
   initCustomCursor();
+  initTypewriterAnimations();
   loadAll();
 });
