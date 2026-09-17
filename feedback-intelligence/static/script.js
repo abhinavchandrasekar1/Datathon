@@ -732,7 +732,7 @@ function initCustomCursor() {
     dot.classList.remove('clicking');
   });
 
-  const interactiveSelector = 'a, button, select, option, input, textarea, .btn-secondary, .btn-ghost, .btn-triage, .urgency-pill, .tab-btn, .cluster-card, .kpi, .drop-zone, tr, [role="button"]';
+  const interactiveSelector = 'a, button, select, option, input, textarea, .btn-secondary, .btn-ghost, .btn-triage, .urgency-pill, .tab-btn, .cluster-card, .kpi, .drop-zone, tr, .c-select-trigger, .c-select-option, [role="button"]';
 
   document.addEventListener('mouseover', (e) => {
     if (e.target.closest(interactiveSelector)) {
@@ -747,8 +747,86 @@ function initCustomCursor() {
   });
 }
 
+// ---------------------------------------------------------------------------
+// In-DOM Custom Select Controller (Bypasses OS popup listbox)
+// ---------------------------------------------------------------------------
+function setupCustomSelects() {
+  document.querySelectorAll('select').forEach(select => {
+    if (select.dataset.customized) return;
+    select.dataset.customized = 'true';
+
+    select.classList.add('native-select-hidden');
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'c-select';
+
+    const trigger = document.createElement('div');
+    trigger.className = 'c-select-trigger';
+    trigger.setAttribute('tabindex', '0');
+
+    const selectedOption = select.options[select.selectedIndex] || select.options[0];
+    const initialText = selectedOption ? selectedOption.text : 'Select...';
+
+    trigger.innerHTML = `
+      <span class="c-select-label">${escapeHtml(initialText)}</span>
+      <svg class="c-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    `;
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.className = 'c-select-options';
+
+    Array.from(select.options).forEach(option => {
+      const optEl = document.createElement('div');
+      optEl.className = `c-select-option ${option.selected ? 'selected' : ''}`;
+      optEl.dataset.value = option.value;
+      optEl.innerHTML = `
+        <span>${escapeHtml(option.text)}</span>
+        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      `;
+
+      optEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        select.value = option.value;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+
+        trigger.querySelector('.c-select-label').textContent = option.text;
+        optionsContainer.querySelectorAll('.c-select-option').forEach(o => o.classList.remove('selected'));
+        optEl.classList.add('selected');
+
+        wrapper.classList.remove('open');
+      });
+
+      optionsContainer.appendChild(optEl);
+    });
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = wrapper.classList.contains('open');
+      document.querySelectorAll('.c-select.open').forEach(s => {
+        if (s !== wrapper) s.classList.remove('open');
+      });
+      wrapper.classList.toggle('open', !isOpen);
+    });
+
+    wrapper.appendChild(trigger);
+    wrapper.appendChild(optionsContainer);
+    select.parentNode.insertBefore(wrapper, select.nextSibling);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.c-select')) {
+      document.querySelectorAll('.c-select.open').forEach(s => s.classList.remove('open'));
+    }
+  });
+}
+
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
+  setupCustomSelects();
   initInteractions();
   initCustomCursor();
   loadAll();

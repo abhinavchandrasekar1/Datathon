@@ -1141,7 +1141,9 @@ th {
 
 /* ---------- Animated Custom Green Dot Cursor ---------- */
 @media (pointer: fine) {
-  * {
+  html, body, *, *::before, *::after,
+  a, button, select, option, optgroup, input, textarea,
+  .c-select, .c-select-trigger, .c-select-option {
     cursor: none !important;
   }
 }
@@ -1155,7 +1157,7 @@ th {
   background: #00ff88;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 999999;
+  z-index: 9999999;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 10px #00ff88, 0 0 20px rgba(0, 255, 136, 0.7);
   opacity: 0;
@@ -1189,4 +1191,137 @@ th {
 .cursor-dot.clicking {
   transform: translate(-50%, -50%) scale(0.7);
   box-shadow: 0 0 8px #00ff88, 0 0 16px rgba(0, 255, 136, 0.6);
+}
+
+/* ---------- Custom In-DOM Dropdowns (Bypasses OS Popup Window) ---------- */
+.c-select {
+  position: relative;
+  width: 100%;
+  user-select: none;
+}
+
+.c-select-trigger {
+  width: 100%;
+  background-color: #121422;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.c-select.open .c-select-trigger {
+  border-color: var(--violet);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+  background-color: #16192b;
+}
+
+.c-select-trigger .c-select-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.c-select-trigger .c-select-chevron {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+}
+
+.c-select.open .c-select-chevron {
+  transform: rotate(180deg);
+  color: var(--cyan);
+}
+
+.c-select-options {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  min-width: 100%;
+  background: #10121d;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 6px;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 99999;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.75), 0 0 24px rgba(139, 92, 246, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  opacity: 0;
+  transform: translateY(-8px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.c-select-options::-webkit-scrollbar {
+  width: 5px;
+}
+.c-select-options::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 4px;
+}
+
+.c-select.open .c-select-options {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.c-select-option {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.86rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.12s ease, color 0.12s ease, transform 0.1s ease;
+  margin-bottom: 2px;
+}
+
+.c-select-option:last-child {
+  margin-bottom: 0;
+}
+
+.c-select-option:hover {
+  background: rgba(139, 92, 246, 0.18);
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+.c-select-option.selected {
+  background: var(--violet);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.c-select-option .check-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  color: #ffffff;
+}
+
+.c-select-option.selected .check-icon {
+  opacity: 1;
+}
+
+.native-select-hidden {
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
 }
