@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --bg: #05060a;
   --surface: rgba(255, 255, 255, 0.045);
   --surface-hover: rgba(255, 255, 255, 0.075);
@@ -26,7 +27,10 @@
 
 * { box-sizing: border-box; }
 
-html { background: var(--bg); }
+html {
+  color-scheme: dark;
+  background: var(--bg);
+}
 
 body {
   margin: 0;
@@ -195,8 +199,6 @@ body {
 }
 
 .add-form textarea,
-.add-form select,
-.filters-toolbar select,
 .search-box input,
 .modal-body textarea {
   width: 100%;
@@ -208,6 +210,43 @@ body {
   font-family: inherit;
   font-size: 0.88rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+select,
+.add-form select,
+.filters-toolbar select {
+  width: 100%;
+  color-scheme: dark;
+  background-color: #121422;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 10px 36px 10px 14px;
+  font-family: inherit;
+  font-size: 0.88rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a90ab' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+select option,
+select optgroup {
+  background-color: #121422 !important;
+  color: #eef0f8 !important;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background-color: #8b5cf6 !important;
+  color: #ffffff !important;
 }
 
 .add-form textarea:focus,
@@ -1098,4 +1137,96 @@ th {
   .form-row { grid-template-columns: 1fr; }
   .filters-toolbar { flex-direction: column; align-items: stretch; }
   .search-box, .select-group { width: 100%; }
+}
+
+/* ---------- Animated Custom Green Cursor ---------- */
+@media (pointer: fine) {
+  * {
+    cursor: none !important;
+  }
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999999;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px #00ff88, 0 0 20px rgba(0, 255, 136, 0.7);
+  opacity: 0;
+  transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, opacity 0.2s ease;
+  will-change: transform;
+}
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(0, 255, 136, 0.75);
+  background: rgba(0, 255, 136, 0.06);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 999998;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 14px rgba(0, 255, 136, 0.4);
+  opacity: 0;
+  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              background 0.2s ease,
+              box-shadow 0.2s ease,
+              opacity 0.2s ease;
+  will-change: transform;
+  animation: cursorPulse 2.8s infinite ease-in-out;
+}
+
+@keyframes cursorPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 0 14px rgba(0, 255, 136, 0.35);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.12);
+    box-shadow: 0 0 26px rgba(0, 255, 136, 0.6);
+  }
+}
+
+.cursor-visible {
+  opacity: 1 !important;
+}
+
+/* Hovering on buttons / links / selects / interactive elements */
+.cursor-ring.hovering {
+  width: 52px;
+  height: 52px;
+  border-color: #00ff88;
+  background: rgba(0, 255, 136, 0.18);
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.7);
+  animation: none;
+}
+
+.cursor-dot.hovering {
+  transform: translate(-50%, -50%) scale(0.5);
+  background: #ffffff;
+  box-shadow: 0 0 12px #ffffff;
+}
+
+/* Clicking state */
+.cursor-ring.clicking {
+  width: 26px;
+  height: 26px;
+  background: rgba(0, 255, 136, 0.45);
+  border-color: #00ff88;
+  box-shadow: 0 0 34px rgba(0, 255, 136, 0.95);
+}
+
+.cursor-dot.clicking {
+  transform: translate(-50%, -50%) scale(1.5);
 }
