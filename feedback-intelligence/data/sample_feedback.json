@@ -130,5 +130,11 @@
     "text": "the whatsapp not work properly in playstore",
     "source": "Play Store",
     "date": "2026-08-15"
+  },
+  {
+    "id": 23,
+    "text": "Music app not properly work",
+    "source": "App Store",
+    "date": "2026-08-15"
   }
 ]

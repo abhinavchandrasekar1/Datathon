@@ -5,17 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feedback Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<div class="bg-scene" aria-hidden="true">
+  <div class="orb orb-violet"></div>
+  <div class="orb orb-cyan"></div>
+  <div class="orb orb-rose"></div>
+  <div class="grid-plane"></div>
+</div>
 
 <div class="shell">
 
   <aside class="side">
     <div class="side-top">
       <h1 class="brand">Feedback<br>Intelligence</h1>
+      <div class="brand-accent"></div>
       <p class="brand-sub">What your users are telling you, read all at once.</p>
     </div>
 
@@ -46,7 +54,7 @@
     </section>
 
     <section class="panel-row">
-      <div class="panel panel-wide">
+      <div class="panel panel-wide tilt">
         <div class="panel-head">
           <h2>Sentiment over time</h2>
           <p>Daily count of positive, negative and neutral feedback</p>
@@ -54,7 +62,7 @@
         <canvas id="trend-chart" height="130"></canvas>
       </div>
 
-      <div class="panel">
+      <div class="panel tilt">
         <div class="panel-head">
           <h2>Sentiment split</h2>
           <p>Share of all feedback collected</p>
@@ -64,7 +72,7 @@
     </section>
 
     <section class="panel-row">
-      <div class="panel panel-wide">
+      <div class="panel panel-wide tilt">
         <div class="panel-head">
           <h2>Feedback by topic</h2>
           <p>Where the volume is concentrated</p>
@@ -72,7 +80,7 @@
         <canvas id="topic-chart" height="120"></canvas>
       </div>
 
-      <div class="panel">
+      <div class="panel tilt">
         <div class="panel-head">
           <h2>Top pain points</h2>
           <p>Topics with the most negative feedback</p>

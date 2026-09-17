@@ -4,7 +4,7 @@ Flask API that ingests product feedback, scores sentiment, clusters it into
 topics, and serves aggregated insights to the dashboard.
 
 No external ML dependencies required (works fully offline) — sentiment is
-computed with a small lexicon + negation handling, which is fast, explainable,
+computed with a small lexicon + negation handling, which is ast, explainable,
 and reliable to demo on stage.
 """
 import json
