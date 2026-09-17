@@ -696,51 +696,39 @@ function escapeHtml(str) {
 }
 
 // ---------------------------------------------------------------------------
-// Animated Custom Green Cursor Controller
+// Animated Custom Green Dot Cursor Controller
 // ---------------------------------------------------------------------------
 function initCustomCursor() {
   const dot = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
-  if (!dot || !ring) return;
+  if (!dot) return;
 
   if (window.matchMedia('(pointer: coarse)').matches) return;
 
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let ringX = mouseX;
-  let ringY = mouseY;
   let isVisible = false;
 
   window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
     if (!isVisible) {
       isVisible = true;
       dot.classList.add('cursor-visible');
-      ring.classList.add('cursor-visible');
     }
-    dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+    dot.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
   });
 
   document.addEventListener('mouseleave', () => {
     isVisible = false;
     dot.classList.remove('cursor-visible');
-    ring.classList.remove('cursor-visible');
   });
 
   document.addEventListener('mouseenter', () => {
     isVisible = true;
     dot.classList.add('cursor-visible');
-    ring.classList.add('cursor-visible');
   });
 
   window.addEventListener('mousedown', () => {
-    ring.classList.add('clicking');
     dot.classList.add('clicking');
   });
 
   window.addEventListener('mouseup', () => {
-    ring.classList.remove('clicking');
     dot.classList.remove('clicking');
   });
 
@@ -748,25 +736,15 @@ function initCustomCursor() {
 
   document.addEventListener('mouseover', (e) => {
     if (e.target.closest(interactiveSelector)) {
-      ring.classList.add('hovering');
       dot.classList.add('hovering');
     }
   });
 
   document.addEventListener('mouseout', (e) => {
     if (e.target.closest(interactiveSelector)) {
-      ring.classList.remove('hovering');
       dot.classList.remove('hovering');
     }
   });
-
-  function renderCursor() {
-    ringX += (mouseX - ringX) * 0.18;
-    ringY += (mouseY - ringY) * 0.18;
-    ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
-    requestAnimationFrame(renderCursor);
-  }
-  requestAnimationFrame(renderCursor);
 }
 
 // Initialize on DOM ready

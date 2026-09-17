@@ -1139,7 +1139,7 @@ th {
   .search-box, .select-group { width: 100%; }
 }
 
-/* ---------- Animated Custom Green Cursor ---------- */
+/* ---------- Animated Custom Green Dot Cursor ---------- */
 @media (pointer: fine) {
   * {
     cursor: none !important;
@@ -1150,8 +1150,8 @@ th {
   position: fixed;
   top: 0;
   left: 0;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: #00ff88;
   border-radius: 50%;
   pointer-events: none;
@@ -1159,42 +1159,17 @@ th {
   transform: translate(-50%, -50%);
   box-shadow: 0 0 10px #00ff88, 0 0 20px rgba(0, 255, 136, 0.7);
   opacity: 0;
-  transition: width 0.15s ease, height 0.15s ease, background 0.15s ease, opacity 0.2s ease;
+  transition: width 0.18s ease, height 0.18s ease, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, opacity 0.2s ease;
   will-change: transform;
+  animation: dotGlowPulse 2.4s infinite ease-in-out;
 }
 
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 36px;
-  height: 36px;
-  border: 2px solid rgba(0, 255, 136, 0.75);
-  background: rgba(0, 255, 136, 0.06);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 999998;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 14px rgba(0, 255, 136, 0.4);
-  opacity: 0;
-  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.2s ease,
-              background 0.2s ease,
-              box-shadow 0.2s ease,
-              opacity 0.2s ease;
-  will-change: transform;
-  animation: cursorPulse 2.8s infinite ease-in-out;
-}
-
-@keyframes cursorPulse {
+@keyframes dotGlowPulse {
   0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
-    box-shadow: 0 0 14px rgba(0, 255, 136, 0.35);
+    box-shadow: 0 0 10px #00ff88, 0 0 20px rgba(0, 255, 136, 0.6);
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.12);
-    box-shadow: 0 0 26px rgba(0, 255, 136, 0.6);
+    box-shadow: 0 0 16px #00ff88, 0 0 32px rgba(0, 255, 136, 0.9);
   }
 }
 
@@ -1203,30 +1178,15 @@ th {
 }
 
 /* Hovering on buttons / links / selects / interactive elements */
-.cursor-ring.hovering {
-  width: 52px;
-  height: 52px;
-  border-color: #00ff88;
-  background: rgba(0, 255, 136, 0.18);
-  box-shadow: 0 0 30px rgba(0, 255, 136, 0.7);
-  animation: none;
-}
-
 .cursor-dot.hovering {
-  transform: translate(-50%, -50%) scale(0.5);
-  background: #ffffff;
-  box-shadow: 0 0 12px #ffffff;
+  width: 18px;
+  height: 18px;
+  background: #00ff9d;
+  box-shadow: 0 0 16px #00ff88, 0 0 35px rgba(0, 255, 136, 0.9);
 }
 
 /* Clicking state */
-.cursor-ring.clicking {
-  width: 26px;
-  height: 26px;
-  background: rgba(0, 255, 136, 0.45);
-  border-color: #00ff88;
-  box-shadow: 0 0 34px rgba(0, 255, 136, 0.95);
-}
-
 .cursor-dot.clicking {
-  transform: translate(-50%, -50%) scale(1.5);
+  transform: translate(-50%, -50%) scale(0.7);
+  box-shadow: 0 0 8px #00ff88, 0 0 16px rgba(0, 255, 136, 0.6);
 }
