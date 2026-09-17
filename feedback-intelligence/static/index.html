@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="shell">
+
+  <aside class="side">
+    <div class="side-top">
+      <h1 class="brand">Feedback<br>Intelligence</h1>
+      <p class="brand-sub">What your users are telling you, read all at once.</p>
+    </div>
+
+    <form id="feedback-form" class="add-form">
+      <label for="feedback-text">Drop in a new piece of feedback</label>
+      <textarea id="feedback-text" rows="4" placeholder="e.g. The export button doesn't work on mobile"></textarea>
+      <select id="feedback-source">
+        <option>App Store</option>
+        <option>Play Store</option>
+        <option>Twitter</option>
+        <option>Reddit</option>
+        <option>Support Ticket</option>
+        <option>Email</option>
+      </select>
+      <button type="submit">Analyze &amp; add</button>
+      <p id="form-result" class="form-result"></p>
+    </form>
+
+    <div class="side-bottom">
+      <p class="side-note">Sentiment is scored with a lexicon model.<br>Topics are matched by keyword cluster.</p>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <section class="kpis" id="kpis">
+      <!-- filled by JS -->
+    </section>
+
+    <section class="panel-row">
+      <div class="panel panel-wide">
+        <div class="panel-head">
+          <h2>Sentiment over time</h2>
+          <p>Daily count of positive, negative and neutral feedback</p>
+        </div>
+        <canvas id="trend-chart" height="130"></canvas>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Sentiment split</h2>
+          <p>Share of all feedback collected</p>
+        </div>
+        <canvas id="sentiment-chart" height="130"></canvas>
+      </div>
+    </section>
+
+    <section class="panel-row">
+      <div class="panel panel-wide">
+        <div class="panel-head">
+          <h2>Feedback by topic</h2>
+          <p>Where the volume is concentrated</p>
+        </div>
+        <canvas id="topic-chart" height="120"></canvas>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Top pain points</h2>
+          <p>Topics with the most negative feedback</p>
+        </div>
+        <ol id="pain-points" class="pain-list"></ol>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Recent feedback</h2>
+        <p>Latest entries with their computed sentiment and topics</p>
+      </div>
+      <div class="table-wrap">
+        <table id="feedback-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Source</th>
+              <th>Feedback</th>
+              <th>Topics</th>
+              <th>Sentiment</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

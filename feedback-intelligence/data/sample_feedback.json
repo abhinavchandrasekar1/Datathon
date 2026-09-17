@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "text": "The app keeps crashing every time I try to upload a photo. Really frustrating.",
+    "source": "App Store",
+    "date": "2026-08-01"
+  },
+  {
+    "id": 2,
+    "text": "Love the new dashboard redesign, it's so much cleaner and faster to navigate.",
+    "source": "Twitter",
+    "date": "2026-08-02"
+  },
+  {
+    "id": 3,
+    "text": "Login page keeps timing out, I can't even get into my account anymore.",
+    "source": "Support Ticket",
+    "date": "2026-08-03"
+  },
+  {
+    "id": 4,
+    "text": "Great customer support, they resolved my billing issue within minutes.",
+    "source": "Email",
+    "date": "2026-08-03"
+  },
+  {
+    "id": 5,
+    "text": "The subscription price increase is unreasonable for the features offered.",
+    "source": "Play Store",
+    "date": "2026-08-04"
+  },
+  {
+    "id": 6,
+    "text": "App is very slow to load on my phone, takes forever to open.",
+    "source": "Play Store",
+    "date": "2026-08-05"
+  },
+  {
+    "id": 7,
+    "text": "Would be amazing if you could add dark mode, my eyes hurt at night.",
+    "source": "Reddit",
+    "date": "2026-08-05"
+  },
+  {
+    "id": 8,
+    "text": "The UI is confusing, I can't find the settings menu anywhere.",
+    "source": "App Store",
+    "date": "2026-08-06"
+  },
+  {
+    "id": 9,
+    "text": "Payment failed three times but money was still deducted from my card.",
+    "source": "Support Ticket",
+    "date": "2026-08-07"
+  },
+  {
+    "id": 10,
+    "text": "Excellent update! The new search feature works flawlessly.",
+    "source": "Twitter",
+    "date": "2026-08-07"
+  },
+  {
+    "id": 11,
+    "text": "Constant crashes after the latest update, please fix this bug soon.",
+    "source": "App Store",
+    "date": "2026-08-08"
+  },
+  {
+    "id": 12,
+    "text": "Customer service was rude and unhelpful when I asked for a refund.",
+    "source": "Email",
+    "date": "2026-08-09"
+  },
+  {
+    "id": 13,
+    "text": "Really smooth experience overall, the checkout process is quick.",
+    "source": "Play Store",
+    "date": "2026-08-09"
+  },
+  {
+    "id": 14,
+    "text": "Please add a way to export reports as PDF, it would save so much time.",
+    "source": "Reddit",
+    "date": "2026-08-10"
+  },
+  {
+    "id": 15,
+    "text": "The app freezes whenever I switch between tabs, very annoying bug.",
+    "source": "App Store",
+    "date": "2026-08-11"
+  },
+  {
+    "id": 16,
+    "text": "Pricing plans are confusing, hard to tell what's included in each tier.",
+    "source": "Twitter",
+    "date": "2026-08-11"
+  },
+  {
+    "id": 17,
+    "text": "Fantastic performance improvements, everything loads instantly now.",
+    "source": "Play Store",
+    "date": "2026-08-12"
+  },
+  {
+    "id": 18,
+    "text": "I was double charged this month, support hasn't responded in days.",
+    "source": "Support Ticket",
+    "date": "2026-08-13"
+  },
+  {
+    "id": 19,
+    "text": "The onboarding flow is clean and easy to follow for new users.",
+    "source": "App Store",
+    "date": "2026-08-13"
+  },
+  {
+    "id": 20,
+    "text": "Interface feels cluttered, too many buttons crammed on one screen.",
+    "source": "Reddit",
+    "date": "2026-08-14"
+  },
+  {
+    "id": 21,
+    "text": "hi whtaspp not work properly",
+    "source": "App Store",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 22,
+    "text": "the whatsapp not work properly in playstore",
+    "source": "Play Store",
+    "date": "2026-08-15"
+  }
+]
