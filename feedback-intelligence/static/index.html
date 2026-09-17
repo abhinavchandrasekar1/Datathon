@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Feedback Intelligence</title>
+<title>Feedback Intelligence — Multi-Channel Product Triage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="chart.umd.min.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,89 +20,205 @@
 
 <div class="shell">
 
+  <!-- Sidebar -->
   <aside class="side">
     <div class="side-top">
+      <div class="brand-badge">Enterprise Triage</div>
       <h1 class="brand">Feedback<br>Intelligence</h1>
       <div class="brand-accent"></div>
-      <p class="brand-sub">What your users are telling you, read all at once.</p>
+      <p class="brand-sub">Multi-dimensional segregation, real-time urgency scoring, and automated engineering synthesis.</p>
     </div>
 
+    <!-- Quick Ingestion Form -->
     <form id="feedback-form" class="add-form">
-      <label for="feedback-text">Drop in a new piece of feedback</label>
-      <textarea id="feedback-text" rows="4" placeholder="e.g. The export button doesn't work on mobile"></textarea>
-      <select id="feedback-source">
-        <option>App Store</option>
-        <option>Play Store</option>
-        <option>Twitter</option>
-        <option>Reddit</option>
-        <option>Support Ticket</option>
-        <option>Email</option>
-      </select>
-      <button type="submit">Analyze &amp; add</button>
+      <div class="form-header">
+        <label for="feedback-text">Ingest Single Feedback</label>
+        <span class="live-dot" title="Active Engine"></span>
+      </div>
+      <textarea id="feedback-text" rows="3" placeholder="e.g. The photo upload crashes on iOS 18 after recent patch"></textarea>
+      
+      <div class="form-row">
+        <select id="feedback-source">
+          <option>App Store</option>
+          <option>Play Store</option>
+          <option>Twitter</option>
+          <option>Reddit</option>
+          <option>Support Ticket</option>
+          <option>Email</option>
+        </select>
+        <button type="submit" id="btn-submit-single">Analyze &amp; Add</button>
+      </div>
       <p id="form-result" class="form-result"></p>
     </form>
 
+    <!-- Batch & Export Actions -->
+    <div class="quick-actions">
+      <button type="button" class="btn-secondary" id="btn-open-batch">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Batch Ingest (CSV / JSON)
+      </button>
+      <div class="export-group">
+        <button type="button" class="btn-ghost" id="btn-export-csv">Export CSV</button>
+        <button type="button" class="btn-ghost" id="btn-export-json">Export JSON</button>
+      </div>
+    </div>
+
     <div class="side-bottom">
-      <p class="side-note">Sentiment is scored with a lexicon model.<br>Topics are matched by keyword cluster.</p>
+      <div class="pipeline-status">
+        <div class="pipeline-item"><span class="status-indicator active"></span> Typo &amp; Slang Normalizer</div>
+        <div class="pipeline-item"><span class="status-indicator active"></span> P0–P3 Urgency Triage</div>
+        <div class="pipeline-item"><span class="status-indicator active"></span> Subsystem &amp; Intent Matrix</div>
+      </div>
+      <p class="side-note">Engineered for sub-millisecond offline classification.</p>
     </div>
   </aside>
 
+  <!-- Main Intelligence Dashboard -->
   <main class="main">
 
+    <!-- Executive Action Briefing Banner -->
+    <section class="executive-brief panel tilt" id="executive-brief">
+      <div class="brief-top">
+        <div class="brief-badge">
+          <span class="pulse-beacon"></span> Monday Morning Action Digest
+        </div>
+        <div class="brief-health" id="brief-health">
+          <span class="health-label">Net Sentiment Health:</span>
+          <span class="health-value" id="health-index-val">--</span>
+        </div>
+      </div>
+      <h2 class="brief-headline" id="brief-headline">Analyzing incoming streams...</h2>
+      <div class="brief-insights" id="brief-insights">
+        <!-- populated dynamically -->
+      </div>
+    </section>
+
+    <!-- Top KPI Row -->
     <section class="kpis" id="kpis">
-      <!-- filled by JS -->
+      <!-- filled by script.js -->
     </section>
 
+    <!-- Master Problem Clusters (Synthesized Issues) -->
+    <section class="panel">
+      <div class="panel-head with-action">
+        <div>
+          <h2>Canonical Problem Clusters &amp; Deduplication</h2>
+          <p>Deduplicated issues automatically aggregated by intent, volume, and urgency</p>
+        </div>
+        <span class="tag-counter" id="cluster-count-badge">0 Clusters Detected</span>
+      </div>
+      <div class="clusters-grid" id="clusters-grid">
+        <!-- populated dynamically -->
+      </div>
+    </section>
+
+    <!-- Visualization Grid Row 1: Trend & Split -->
     <section class="panel-row">
       <div class="panel panel-wide tilt">
         <div class="panel-head">
-          <h2>Sentiment over time</h2>
-          <p>Daily count of positive, negative and neutral feedback</p>
+          <h2>Sentiment Over Time</h2>
+          <p>Daily volume trends across positive, negative, and neutral feedback</p>
         </div>
-        <canvas id="trend-chart" height="130"></canvas>
+        <canvas id="trend-chart" height="120"></canvas>
       </div>
 
       <div class="panel tilt">
         <div class="panel-head">
-          <h2>Sentiment split</h2>
-          <p>Share of all feedback collected</p>
+          <h2>Sentiment Split</h2>
+          <p>Overall customer satisfaction ratio</p>
         </div>
-        <canvas id="sentiment-chart" height="130"></canvas>
+        <canvas id="sentiment-chart" height="120"></canvas>
       </div>
     </section>
 
+    <!-- Visualization Grid Row 2: Cross-Channel & Pain Points -->
     <section class="panel-row">
       <div class="panel panel-wide tilt">
         <div class="panel-head">
-          <h2>Feedback by topic</h2>
-          <p>Where the volume is concentrated</p>
+          <h2>Cross-Channel Sentiment Divergence</h2>
+          <p>How user sentiment varies between App Stores, Social Media, and Support Tickets</p>
         </div>
-        <canvas id="topic-chart" height="120"></canvas>
+        <canvas id="channel-chart" height="125"></canvas>
       </div>
 
       <div class="panel tilt">
         <div class="panel-head">
-          <h2>Top pain points</h2>
-          <p>Topics with the most negative feedback</p>
+          <h2>Top Friction Points</h2>
+          <p>Subsystems generating the highest negative volume</p>
         </div>
         <ol id="pain-points" class="pain-list"></ol>
       </div>
     </section>
 
-    <section class="panel">
-      <div class="panel-head">
-        <h2>Recent feedback</h2>
-        <p>Latest entries with their computed sentiment and topics</p>
+    <!-- Live Stream & Interactive Filter Bar -->
+    <section class="panel stream-panel">
+      <div class="stream-header">
+        <div class="panel-head">
+          <h2>Live Feedback Stream &amp; Triage</h2>
+          <p>Multi-dimensional classified entries with actionable customer support &amp; ticket workflows</p>
+        </div>
+        <div class="stream-stats">
+          <span id="filtered-count">Showing all entries</span>
+        </div>
       </div>
+
+      <!-- Controls & Filter Toolbar -->
+      <div class="filters-toolbar">
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="filter-search" placeholder="Search verbatim, keywords, or error messages...">
+        </div>
+
+        <div class="select-group">
+          <select id="filter-channel">
+            <option value="">All Channels</option>
+            <option value="App Store">App Store</option>
+            <option value="Play Store">Play Store</option>
+            <option value="Twitter">Twitter</option>
+            <option value="Reddit">Reddit</option>
+            <option value="Support Ticket">Support Ticket</option>
+            <option value="Email">Email</option>
+          </select>
+
+          <select id="filter-intent">
+            <option value="">All Intents</option>
+            <option value="Bug Report">Bug Report</option>
+            <option value="Feature Request">Feature Request</option>
+            <option value="Billing & Churn Risk">Billing & Churn</option>
+            <option value="UX Friction">UX Friction</option>
+            <option value="Customer Support">Customer Support</option>
+            <option value="Kudos & Praise">Kudos & Praise</option>
+          </select>
+
+          <select id="filter-sentiment">
+            <option value="">All Sentiments</option>
+            <option value="positive">Positive</option>
+            <option value="negative">Negative</option>
+            <option value="neutral">Neutral</option>
+          </select>
+        </div>
+
+        <div class="urgency-tabs">
+          <button class="urgency-pill active" data-urgency="">All</button>
+          <button class="urgency-pill pill-p0" data-urgency="P0">P0</button>
+          <button class="urgency-pill pill-p1" data-urgency="P1">P1</button>
+          <button class="urgency-pill pill-p2" data-urgency="P2">P2</button>
+          <button class="urgency-pill pill-p3" data-urgency="P3">P3</button>
+        </div>
+      </div>
+
+      <!-- Stream Table -->
       <div class="table-wrap">
         <table id="feedback-table">
           <thead>
             <tr>
               <th>Date</th>
-              <th>Source</th>
-              <th>Feedback</th>
-              <th>Topics</th>
+              <th>Channel</th>
+              <th>Customer Verbatim</th>
+              <th>Intent &amp; Subsystems</th>
+              <th>Urgency</th>
               <th>Sentiment</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -112,6 +228,83 @@
 
   </main>
 </div>
+
+<!-- Triage Action Drawer / Modal -->
+<div class="modal-backdrop" id="triage-modal" aria-hidden="true">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div>
+        <div class="modal-badge" id="modal-urgency-badge">P0 Critical</div>
+        <h3 id="modal-title">Feedback Triage &amp; Response</h3>
+      </div>
+      <button class="btn-close" id="btn-close-triage">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Verbatim card -->
+      <div class="verbatim-box">
+        <div class="verbatim-meta">
+          <span id="modal-channel">App Store</span> &bull; <span id="modal-date">2026-08-15</span>
+        </div>
+        <p id="modal-text" class="verbatim-quote">Loading customer feedback...</p>
+        <div class="modal-tags" id="modal-tags"></div>
+      </div>
+
+      <!-- Action Tabs -->
+      <div class="action-tabs">
+        <button class="tab-btn active" data-tab="tab-reply">Draft Support Reply</button>
+        <button class="tab-btn" data-tab="tab-ticket">Export Dev Ticket (Jira / Linear)</button>
+      </div>
+
+      <!-- Tab Content: Reply -->
+      <div class="tab-pane active" id="tab-reply">
+        <label for="draft-reply-text">Tailored Empathetic Customer Response</label>
+        <textarea id="draft-reply-text" rows="7"></textarea>
+        <div class="tab-actions">
+          <button class="btn-action" id="btn-copy-reply">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Reply to Clipboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content: Ticket -->
+      <div class="tab-pane" id="tab-ticket">
+        <label for="ticket-markdown-text">Pre-Formatted Markdown Ticket</label>
+        <textarea id="ticket-markdown-text" rows="8" class="code-font"></textarea>
+        <div class="tab-actions">
+          <button class="btn-action" id="btn-copy-ticket">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Ticket Markdown
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Batch Upload Modal -->
+<div class="modal-backdrop" id="batch-modal" aria-hidden="true">
+  <div class="modal-content modal-compact">
+    <div class="modal-header">
+      <h3>Batch Feedback Ingestion</h3>
+      <button class="btn-close" id="btn-close-batch">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="drop-zone" id="drop-zone">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <p class="drop-title">Drag &amp; drop a CSV or JSON file</p>
+        <p class="drop-sub">Columns supported: <code>text, source, date</code></p>
+        <input type="file" id="batch-file-input" accept=".csv, .json" style="display:none;">
+        <button type="button" class="btn-secondary" id="btn-browse-file">Browse File</button>
+      </div>
+      <div id="batch-status" class="batch-status"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast">Action copied to clipboard</div>
 
 <script src="script.js"></script>
 </body>

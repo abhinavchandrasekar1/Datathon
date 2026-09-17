@@ -136,5 +136,95 @@
     "text": "Music app not properly work",
     "source": "App Store",
     "date": "2026-08-15"
+  },
+  {
+    "id": 24,
+    "text": "Really smooth app and very easy to use. Love the simple interface.",
+    "source": "Play Store",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 25,
+    "text": "The app works perfectly and I haven't faced any major issues so far.",
+    "source": "Play Store",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 26,
+    "text": "Great experience overall. Everything is well organized.",
+    "source": "Reddit",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 27,
+    "text": "I really like how fast the app responds. Makes things much easier.",
+    "source": "Reddit",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 28,
+    "text": "Clean design and easy navigation. Good job by the developers.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 29,
+    "text": "One of the best apps I've used recently. Very useful.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 30,
+    "text": "The features are actually helpful and not complicated to understand.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 31,
+    "text": "The app keeps crashing whenever I try to open certain features.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 32,
+    "text": "The latest update made the app slower than before.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 33,
+    "text": "Sometimes the app doesn't respond when I click on buttons.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 34,
+    "text": "The idea is good, but the app still needs a lot of improvements.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 35,
+    "text": "The interface looks outdated and could use a proper redesign.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 36,
+    "text": "Some important features are missing and should be added.",
+    "source": "Support Ticket",
+    "date": "2026-08-15"
+  },
+  {
+    "id": 37,
+    "text": "FaceID authentication repeatedly fails on Samsung devices",
+    "source": "Play Store",
+    "date": "2026-08-16"
+  },
+  {
+    "id": 38,
+    "text": "The dark theme is breathtaking, thank you so much!",
+    "source": "Twitter",
+    "date": "2026-08-16"
   }
 ]
