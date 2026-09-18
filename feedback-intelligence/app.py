@@ -24,8 +24,10 @@ APP_DIR = Path(__file__).resolve().parent
 def find_data_file() -> Path:
     candidates = [
         APP_DIR / "data" / "sample_feedback.json",
+        APP_DIR / "api" / "data" / "sample_feedback.json",
         APP_DIR.parent / "data" / "sample_feedback.json",
         Path.cwd() / "data" / "sample_feedback.json",
+        Path.cwd() / "api" / "data" / "sample_feedback.json",
         Path.cwd() / "feedback-intelligence" / "data" / "sample_feedback.json",
     ]
     for p in candidates:
@@ -59,28 +61,58 @@ app = Flask(__name__, static_folder=find_static_folder(), static_url_path="")
 # WSGI Path Preservation Middleware for Vercel Rewrites
 # ---------------------------------------------------------------------------
 class VercelPathMiddleware:
-    """Ensures original URL path is preserved when Vercel rewrites requests to /api/index.py."""
+    """Ensures original URL path is preserved when Vercel rewrites requests to /api/index."""
 
     def __init__(self, wsgi_app):
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
+        import urllib.parse
+
+        # 1. Parse route query parameter if injected by Vercel rewrite (?route=/$1)
+        query_string = environ.get("QUERY_STRING", "")
+        if "route=" in query_string:
+            params = urllib.parse.parse_qs(query_string)
+            if "route" in params and params["route"]:
+                sub = params["route"][0].strip()
+                if not sub.startswith("/"):
+                    sub = "/" + sub
+                target = f"/api{sub}" if not sub.startswith("/api/") else sub
+                environ["PATH_INFO"] = target
+                # Keep QUERY_STRING clean of internal 'route' parameter
+                clean_params = {k: v for k, v in params.items() if k != "route"}
+                environ["QUERY_STRING"] = urllib.parse.urlencode(clean_params, doseq=True)
+
+        # 2. Check proxy headers if path is still the raw function entry point
         path = environ.get("PATH_INFO", "")
-        if path in ("/api/index", "/api/index.py", "/api"):
+        if path in ("/api/index", "/api/index.py", "/api", "/index", ""):
             for header in (
                 "HTTP_X_FORWARDED_URI",
                 "HTTP_X_MATCHED_PATH",
                 "HTTP_X_INVOKE_PATH",
                 "HTTP_X_ORIGINAL_URI",
+                "REQUEST_URI",
+                "RAW_URI",
             ):
                 original = environ.get(header)
                 if original and original.startswith("/"):
-                    environ["PATH_INFO"] = original.split("?")[0]
-                    break
+                    clean = original.split("?")[0]
+                    if clean not in ("/api/index", "/api/index.py", "/api", "/index", ""):
+                        environ["PATH_INFO"] = clean
+                        break
+
         return self.wsgi_app(environ, start_response)
 
 
 app.wsgi_app = VercelPathMiddleware(app.wsgi_app)
+
+
+@app.after_request
+def apply_cors(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
 
 # ---------------------------------------------------------------------------
 # Storage & Persistence (Serverless-Safe with /tmp Fallback)
@@ -558,6 +590,7 @@ def index():
 
 
 @app.route("/api/feedback", methods=["GET"])
+@app.route("/feedback", methods=["GET"])
 def get_feedback():
     enriched = [enrich(item) for item in FEEDBACK]
     enriched.sort(key=lambda x: x.get("date", ""), reverse=True)
@@ -565,6 +598,7 @@ def get_feedback():
 
 
 @app.route("/api/feedback", methods=["POST"])
+@app.route("/feedback", methods=["POST"])
 def add_feedback():
     global _next_id
     body = request.get_json(force=True) or {}
@@ -586,6 +620,7 @@ def add_feedback():
 
 
 @app.route("/api/feedback/batch", methods=["POST"])
+@app.route("/feedback/batch", methods=["POST"])
 def batch_feedback():
     """Bulk ingest entries from CSV or JSON payload."""
     global _next_id
@@ -634,6 +669,7 @@ def batch_feedback():
 
 
 @app.route("/api/summary", methods=["GET"])
+@app.route("/summary", methods=["GET"])
 def get_summary():
     enriched = [enrich(item) for item in FEEDBACK]
     total = len(enriched) or 1
@@ -690,6 +726,7 @@ def get_summary():
 
 
 @app.route("/api/feedback/draft-reply", methods=["POST"])
+@app.route("/feedback/draft-reply", methods=["POST"])
 def draft_reply():
     """Generates an empathetic and targeted customer support draft."""
     data = request.get_json(force=True) or {}
@@ -749,6 +786,7 @@ def draft_reply():
 
 
 @app.route("/api/feedback/create-ticket", methods=["POST"])
+@app.route("/feedback/create-ticket", methods=["POST"])
 def create_ticket():
     """Generates a structured developer ticket formatted for Linear, Jira, or GitHub."""
     data = request.get_json(force=True) or {}
@@ -782,6 +820,7 @@ def create_ticket():
 
 
 @app.route("/api/export", methods=["GET"])
+@app.route("/export", methods=["GET"])
 def export_data():
     """Exports current database in either JSON or CSV format."""
     fmt = request.args.get("format", "json").lower()
@@ -820,6 +859,8 @@ def export_data():
 # Health & Status Checks (For Vercel Function Ping and Monitoring)
 # ---------------------------------------------------------------------------
 @app.route("/api/health")
+@app.route("/health")
+@app.route("/api/index")
 def api_health():
     """Health check endpoint for Vercel and uptime monitoring."""
     return jsonify({
