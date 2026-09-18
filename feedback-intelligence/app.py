@@ -39,15 +39,17 @@ DATA_FILE = find_data_file()
 
 def find_static_folder() -> str:
     candidates = [
+        APP_DIR / "public",
         APP_DIR / "static",
-        APP_DIR.parent / "static",
+        Path.cwd() / "public",
         Path.cwd() / "static",
+        Path.cwd() / "feedback-intelligence" / "public",
         Path.cwd() / "feedback-intelligence" / "static",
     ]
     for p in candidates:
         if p.is_dir() and (p / "index.html").exists():
             return str(p)
-    return str(APP_DIR / "static")
+    return str(APP_DIR / "public" if (APP_DIR / "public").exists() else APP_DIR / "static")
 
 
 app = Flask(__name__, static_folder=find_static_folder(), static_url_path="")
@@ -57,7 +59,7 @@ app = Flask(__name__, static_folder=find_static_folder(), static_url_path="")
 # WSGI Path Preservation Middleware for Vercel Rewrites
 # ---------------------------------------------------------------------------
 class VercelPathMiddleware:
-    """Ensures original URL path is preserved when Vercel rewrites requests to /api/index."""
+    """Ensures original URL path is preserved when Vercel rewrites requests to /api/index.py."""
 
     def __init__(self, wsgi_app):
         self.wsgi_app = wsgi_app
@@ -65,9 +67,16 @@ class VercelPathMiddleware:
     def __call__(self, environ, start_response):
         path = environ.get("PATH_INFO", "")
         if path in ("/api/index", "/api/index.py", "/api"):
-            original = environ.get("HTTP_X_FORWARDED_URI") or environ.get("HTTP_X_MATCHED_PATH")
-            if original:
-                environ["PATH_INFO"] = original.split("?")[0]
+            for header in (
+                "HTTP_X_FORWARDED_URI",
+                "HTTP_X_MATCHED_PATH",
+                "HTTP_X_INVOKE_PATH",
+                "HTTP_X_ORIGINAL_URI",
+            ):
+                original = environ.get(header)
+                if original and original.startswith("/"):
+                    environ["PATH_INFO"] = original.split("?")[0]
+                    break
         return self.wsgi_app(environ, start_response)
 
 
@@ -811,7 +820,6 @@ def export_data():
 # Health & Status Checks (For Vercel Function Ping and Monitoring)
 # ---------------------------------------------------------------------------
 @app.route("/api/health")
-@app.route("/api/index")
 def api_health():
     """Health check endpoint for Vercel and uptime monitoring."""
     return jsonify({
