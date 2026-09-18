@@ -18,24 +18,105 @@ from pathlib import Path
 
 from flask import Flask, jsonify, request, Response, send_from_directory
 
-APP_DIR = Path(__file__).parent
-DATA_FILE = APP_DIR / "data" / "sample_feedback.json"
+APP_DIR = Path(__file__).resolve().parent
 
-app = Flask(__name__, static_folder="static", static_url_path="")
+
+def find_data_file() -> Path:
+    candidates = [
+        APP_DIR / "data" / "sample_feedback.json",
+        APP_DIR.parent / "data" / "sample_feedback.json",
+        Path.cwd() / "data" / "sample_feedback.json",
+        Path.cwd() / "feedback-intelligence" / "data" / "sample_feedback.json",
+    ]
+    for p in candidates:
+        if p.exists():
+            return p
+    return APP_DIR / "data" / "sample_feedback.json"
+
+
+DATA_FILE = find_data_file()
+
+
+def find_static_folder() -> str:
+    candidates = [
+        APP_DIR / "static",
+        APP_DIR.parent / "static",
+        Path.cwd() / "static",
+        Path.cwd() / "feedback-intelligence" / "static",
+    ]
+    for p in candidates:
+        if p.is_dir() and (p / "index.html").exists():
+            return str(p)
+    return str(APP_DIR / "static")
+
+
+app = Flask(__name__, static_folder=find_static_folder(), static_url_path="")
+
 
 # ---------------------------------------------------------------------------
-# Storage & Persistence
+# WSGI Path Preservation Middleware for Vercel Rewrites
 # ---------------------------------------------------------------------------
-with open(DATA_FILE, "r", encoding="utf-8") as f:
-    FEEDBACK = json.load(f)
+class VercelPathMiddleware:
+    """Ensures original URL path is preserved when Vercel rewrites requests to /api/index."""
 
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        path = environ.get("PATH_INFO", "")
+        if path in ("/api/index", "/api/index.py", "/api"):
+            original = environ.get("HTTP_X_FORWARDED_URI") or environ.get("HTTP_X_MATCHED_PATH")
+            if original:
+                environ["PATH_INFO"] = original.split("?")[0]
+        return self.wsgi_app(environ, start_response)
+
+
+app.wsgi_app = VercelPathMiddleware(app.wsgi_app)
+
+# ---------------------------------------------------------------------------
+# Storage & Persistence (Serverless-Safe with /tmp Fallback)
+# ---------------------------------------------------------------------------
+def load_initial_feedback():
+    tmp_file = Path("/tmp") / "sample_feedback.json"
+    if tmp_file.exists():
+        try:
+            with open(tmp_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+
+    if DATA_FILE.exists():
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+
+    return []
+
+
+FEEDBACK = load_initial_feedback()
 _next_id = max((item.get("id", 0) for item in FEEDBACK), default=0) + 1
 
 
 def save_feedback():
-    """Atomically write the feedback collection back to disk."""
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(FEEDBACK, f, indent=2, ensure_ascii=False)
+    """Atomically write the feedback collection back to disk with serverless /tmp fallback."""
+    # Try primary location first (works locally and in persistent containers)
+    try:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(FEEDBACK, f, indent=2, ensure_ascii=False)
+            return
+    except (OSError, IOError):
+        pass
+
+    # Read-only filesystem fallback (e.g. AWS Lambda / Vercel Serverless Function)
+    try:
+        tmp_dir = Path("/tmp")
+        if tmp_dir.exists() and tmp_dir.is_dir():
+            with open(tmp_dir / "sample_feedback.json", "w", encoding="utf-8") as f:
+                json.dump(FEEDBACK, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"Serverless storage warning: Could not persist to /tmp ({e}). Data retained in memory.")
 
 
 # ---------------------------------------------------------------------------
@@ -724,6 +805,57 @@ def export_data():
         mimetype="application/json",
         headers={"Content-Disposition": "attachment; filename=feedback_intelligence_export.json"},
     )
+
+
+# ---------------------------------------------------------------------------
+# Health & Status Checks (For Vercel Function Ping and Monitoring)
+# ---------------------------------------------------------------------------
+@app.route("/api/health")
+@app.route("/api/index")
+def api_health():
+    """Health check endpoint for Vercel and uptime monitoring."""
+    return jsonify({
+        "status": "ok",
+        "service": "feedback-intelligence",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "total_records": len(FEEDBACK),
+    })
+
+
+# ---------------------------------------------------------------------------
+# Robust Error Handlers (Eliminates SyntaxError: Unexpected token '<' on client)
+# ---------------------------------------------------------------------------
+@app.errorhandler(404)
+def handle_404(e):
+    if request.path.startswith("/api/"):
+        return jsonify({
+            "error": f"API endpoint '{request.path}' not found",
+            "status": 404,
+            "message": "Verify the endpoint route URL.",
+        }), 404
+    return send_from_directory(app.static_folder, "index.html")
+
+
+@app.errorhandler(500)
+def handle_500(e):
+    if request.path.startswith("/api/"):
+        return jsonify({
+            "error": "Internal server error",
+            "details": str(e),
+            "status": 500,
+        }), 500
+    return jsonify({"error": "Internal server error", "status": 500}), 500
+
+
+@app.errorhandler(Exception)
+def handle_generic_exception(e):
+    if request.path.startswith("/api/"):
+        return jsonify({
+            "error": "Unhandled backend exception",
+            "details": str(e),
+            "status": 500,
+        }), 500
+    return f"Internal Error: {e}", 500
 
 
 if __name__ == "__main__":

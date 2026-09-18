@@ -33,20 +33,41 @@ const activeFilters = {
 let trendChart, sentimentChart, channelChart;
 
 // ---------------------------------------------------------------------------
+// Network & Safe Fetch Utilities (Protects against non-JSON / 404 HTML parsing errors)
+// ---------------------------------------------------------------------------
+async function safeFetchJson(url, options = {}) {
+  const res = await fetch(url, options);
+  const contentType = res.headers.get('content-type') || '';
+  if (!res.ok) {
+    let message = `HTTP ${res.status}`;
+    if (contentType.includes('application/json')) {
+      try {
+        const errData = await res.json();
+        message = errData.error || errData.message || message;
+      } catch (_) {}
+    }
+    throw new Error(message);
+  }
+  if (contentType.includes('application/json')) {
+    return res.json();
+  }
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (_) {
+    throw new Error('Server returned non-JSON response');
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Bootstrap & Data Ingestion
 // ---------------------------------------------------------------------------
 async function loadAll() {
   let feedbackRes, summaryRes;
   try {
     [feedbackRes, summaryRes] = await Promise.all([
-      fetch('/api/feedback').then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      }),
-      fetch('/api/summary').then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      }),
+      safeFetchJson('/api/feedback'),
+      safeFetchJson('/api/summary'),
     ]);
   } catch (err) {
     console.error('Network error reaching backend:', err);
@@ -449,22 +470,24 @@ window.openTriageModal = async function(id) {
 
   try {
     const [replyRes, ticketRes] = await Promise.all([
-      fetch('/api/feedback/draft-reply', {
+      safeFetchJson('/api/feedback/draft-reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: item.id, text: item.text }),
-      }).then(r => r.json()),
-      fetch('/api/feedback/create-ticket', {
+      }),
+      safeFetchJson('/api/feedback/create-ticket', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: item.id, text: item.text }),
-      }).then(r => r.json()),
+      }),
     ]);
 
-    document.getElementById('draft-reply-text').value = replyRes.reply;
-    document.getElementById('ticket-markdown-text').value = ticketRes.ticket;
+    document.getElementById('draft-reply-text').value = replyRes?.reply || 'Could not generate draft.';
+    document.getElementById('ticket-markdown-text').value = ticketRes?.ticket || 'Could not generate ticket.';
   } catch (err) {
     console.error('Failed to generate action templates:', err);
+    document.getElementById('draft-reply-text').value = 'Failed to generate draft reply. Please try again.';
+    document.getElementById('ticket-markdown-text').value = 'Failed to generate ticket. Please try again.';
   }
 };
 
@@ -527,7 +550,7 @@ function initBatchModal() {
       const isJson = file.name.endsWith('.json');
 
       try {
-        const res = await fetch('/api/feedback/batch', {
+        const data = await safeFetchJson('/api/feedback/batch', {
           method: 'POST',
           headers: {
             'Content-Type': isJson ? 'application/json' : 'text/csv',
@@ -535,14 +558,13 @@ function initBatchModal() {
           body: content,
         });
 
-        const data = await res.json();
         statusEl.innerHTML = `<span style="color: var(--positive);">✓ Ingested ${data.imported_count || 0} entries successfully!</span>`;
         setTimeout(() => {
           modal.classList.remove('open');
           loadAll();
         }, 1200);
       } catch (err) {
-        statusEl.innerHTML = '<span style="color: var(--negative);">Upload failed. Please check file structure.</span>';
+        statusEl.innerHTML = `<span style="color: var(--negative);">Upload failed: ${err.message || 'Please check file structure.'}</span>`;
       }
     };
 
@@ -644,12 +666,11 @@ function initInteractions() {
     if (!text) return;
 
     try {
-      const res = await fetch('/api/feedback', {
+      const item = await safeFetchJson('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, source: sourceEl.value }),
       });
-      const item = await res.json();
 
       resultEl.textContent = `Classified as ${item.urgency} · ${item.intent} (${item.sentiment})`;
       resultEl.className = `form-result ${item.sentiment}`;
@@ -657,7 +678,7 @@ function initInteractions() {
 
       loadAll();
     } catch (err) {
-      resultEl.textContent = 'Submission error. Check console.';
+      resultEl.textContent = `Submission error: ${err.message || 'Check console.'}`;
       resultEl.className = 'form-result negative';
     }
   });
